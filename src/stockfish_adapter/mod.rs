@@ -11,15 +11,23 @@ pub struct stockfish_adapter {
 impl stockfish_adapter {
     pub fn new() -> stockfish_adapter {
         let path = env::current_dir().unwrap();
-
-        println!("Looking for stockfish in {}", path.display());
-        let mut child = Command::new("cmd")
-            .arg("/C")
-            .arg(path.join("stockfish_15_1.exe"))
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .expect("failed to execute child");
+        let mut child = if cfg!(target_os = "windows") {
+            Command::new("cmd")
+                .arg("/C")
+                .arg(path.join("windows.exe"))
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .expect("failed to execute process")
+        } else {
+            Command::new("sh")
+                .arg("-c")
+                .arg("./ubuntu")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .expect("failed to execute process")
+        };
 
         println!("child pid: {}", child.id());
 
@@ -34,6 +42,27 @@ impl stockfish_adapter {
     }
     pub fn pid(&self) -> u32 {
         self.process.id()
+    }
+    pub fn kill(&mut self) {
+        self.process.kill().expect("failed to kill process");
+    }
+    pub fn status(&mut self) -> bool {
+        let sin = self.stdin.as_mut().unwrap();
+        writeln!(sin, "isready").expect("failed to write to stdin");
+        sin.flush().expect("failed to flush stdin");
+        let sout = self.stdout.as_mut().unwrap();
+        let reader = BufReader::new(sout);
+        for line in reader.lines() {
+            match line {
+                Ok(line) => {
+                    if line.starts_with("readyok") {
+                        return true;
+                    }
+                }
+                Err(err) => eprintln!("Error reading line: {}", err),
+            }
+        }
+        false
     }
     pub fn newgame(&mut self) {
         let sin = self.stdin.as_mut().unwrap();

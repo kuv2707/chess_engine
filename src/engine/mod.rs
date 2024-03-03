@@ -49,3 +49,4 @@ pub fn parse_pos(m: &str) -> Result<Position, String> {
     }
     Ok(board::encode_pos(7-(r as u8 - '1' as u8), f as u8 - 'a' as u8))
 }
+

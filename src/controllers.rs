@@ -52,11 +52,14 @@ pub async fn makemove(fen: web::Json<MoveArg>) -> impl Responder {
         return HttpResponse::BadRequest().body("Invalid move");
     }
     let mov = m_res.unwrap();
+    println!("mov: {}", mov);
     let valid_moves = all_possible_valid_moves(&mut board);
     if !valid_moves.contains(&mov) {
         return HttpResponse::BadRequest().body("Invalid move");
     }
+    println!("making move: {}", mov);
     board.make_move(mov);
+    println!("made");
     HttpResponse::Ok().body(board.to_fen())
 }
 
@@ -103,4 +106,10 @@ pub async fn stockfishmove(data: web::Data<AppState>, fen: web::Json<Fen>) -> im
     let mov = m_res.unwrap();
     board.make_move(mov);
     HttpResponse::Ok().body(board.to_fen())
+}
+
+
+pub async fn stockfishstatus(data: web::Data<AppState>) -> impl Responder {
+    let mut stockfish = data.stockfish.lock().unwrap();
+    HttpResponse::Ok().body(stockfish.status().to_string())
 }

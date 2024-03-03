@@ -1,11 +1,14 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
+use engine::{encode_move, moves::get_raw_moves};
 use std::{io, sync::Mutex};
 mod models;
 mod controllers;
 mod engine;
 mod stockfish_adapter;
 use stockfish_adapter::stockfish_adapter as stockfish;
+
+use crate::engine::board::{encode_pos, pos_as_string};
 fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/bestmove").route(web::post().to(controllers::bestmove)))
         .service(web::resource("/makemove").route(web::post().to(controllers::makemove)))
@@ -17,6 +20,10 @@ fn config(cfg: &mut web::ServiceConfig) {
                 .route(web::post().to(controllers::stockfishbestmove)),
         )
         .service(
+            web::resource("/stockfishstatus")
+                .route(web::post().to(controllers::stockfishstatus)),
+        )
+        .service(
             web::resource("/stockfishmakemove").route(web::post().to(controllers::stockfishmove)),
         );
 }
@@ -24,6 +31,8 @@ fn config(cfg: &mut web::ServiceConfig) {
 pub struct AppState {
     pub stockfish: Mutex<stockfish>,
 }
+
+
 
 #[actix_rt::main]
 pub async fn main() -> io::Result<()> {
@@ -46,3 +55,18 @@ pub async fn main() -> io::Result<()> {
     println!("Server is ready");
     server?.run().await
 }
+
+// pub fn main() {
+//     let board = engine::board::create_board("rn2kbnr/ppp1pppp/8/8/1PpqPP1P/8/P2P2P1/RNBbKBNR w");
+//     let board = board.unwrap();
+//     // let valid_moves = engine::moves::all_possible_valid_moves(&mut board);
+//     let pos=encode_pos(7, 4);
+//     let newpos = encode_pos(7, 3);
+//     let wk=board.get_piece(pos).unwrap();
+//     let moves=get_raw_moves(&wk, &pos, &board);
+//     for m in moves{
+//         println!("{}", engine::move_as_string(&m));
+//     }
+//     println!("{} ", pos_as_string(&newpos));
+
+// }
