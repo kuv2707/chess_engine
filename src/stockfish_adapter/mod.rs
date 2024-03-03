@@ -1,6 +1,6 @@
 use std::io::{stdin, BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
-use std::{env, thread};
+use std::{clone, env, thread};
 
 pub struct stockfish_adapter {
     process: Child,
@@ -11,6 +11,8 @@ pub struct stockfish_adapter {
 impl stockfish_adapter {
     pub fn new() -> stockfish_adapter {
         let path = env::current_dir().unwrap();
+
+        println!("Looking for stockfish in {}", path.display());
         let mut child = Command::new("cmd")
             .arg("/C")
             .arg(path.join("stockfish_15_1.exe"))
