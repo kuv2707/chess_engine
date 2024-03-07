@@ -50,7 +50,7 @@ pub async fn main() -> io::Result<()> {
                 .allow_any_header(),
         )
     })
-    .bind("localhost:4000");
+    .bind("0.0.0.0:8080");
 
     println!("Server is ready");
     server?.run().await
