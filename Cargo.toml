@@ -11,3 +11,4 @@ actix-rt = "2.9.0"
 actix-web = "4.4.1"
 serde = {version = "1.0.130", features = ["derive"]}
 actix-cors = "0.7.0"
+repress-rs = {git = "https://github.com/kuv2707/repress-rs", branch = "master"}

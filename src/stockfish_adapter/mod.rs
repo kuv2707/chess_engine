@@ -2,14 +2,14 @@ use std::io::{stdin, BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 use std::{clone, env, thread};
 
-pub struct stockfish_adapter {
+pub struct StockfishAdapter {
     process: Child,
     stdin: Option<ChildStdin>,
     stdout: Option<ChildStdout>,
 }
 
-impl stockfish_adapter {
-    pub fn new() -> stockfish_adapter {
+impl StockfishAdapter {
+    pub fn new() -> StockfishAdapter {
         let path = env::current_dir().unwrap();
         let mut child = if cfg!(target_os = "windows") {
             Command::new("cmd")
@@ -34,7 +34,7 @@ impl stockfish_adapter {
         let input = child.stdin.take().expect("failed to get stdin");
         let output = child.stdout.take().expect("failed to get stdout");
 
-        stockfish_adapter {
+        StockfishAdapter {
             process: child,
             stdin: Some(input),
             stdout: Some(output),
