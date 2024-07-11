@@ -1,6 +1,6 @@
-use std::io::{stdin, BufRead, BufReader, Write};
+use std::env;
+use std::io::{BufRead, BufReader, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
-use std::{clone, env, thread};
 
 pub struct StockfishAdapter {
     process: Child,
@@ -106,5 +106,31 @@ impl StockfishAdapter {
             }
         }
         bestmove
+    }
+    pub fn legal_moves(&mut self) -> Vec<String> {
+        let sout = self.stdout.as_mut().unwrap();
+        let reader = BufReader::new(sout);
+        let sin = self.stdin.as_mut().unwrap();
+        writeln!(sin, "go perft 1").expect("failed to write to stdin");
+        sin.flush();
+        let mut legal_moves = Vec::new();
+        for line in reader.lines() {
+            match line {
+                Ok(line) => {
+                    println!("{}", line);
+                    if line.len() == 0 {
+                        break;
+                    }
+                    let colon_index = line.find(":");
+                    if colon_index.is_none() {
+                        break;
+                    }
+                    let moves = &line[0..colon_index.unwrap()];
+                    legal_moves.push(moves.to_string());
+                }
+                Err(err) => eprintln!("Error reading line: {}", err),
+            }
+        }
+        legal_moves
     }
 }
