@@ -40,15 +40,19 @@ The project includes a custom-built HTTP server implementation,
 enabling users to access and interact with the chess engines through
 a web interface. The server is single-threaded and can handle one
 request at a time. It parses HTTP requests and responds with the
-appropriate data, as defined by the handlers.
+appropriate data, as defined by the handlers. Checkout the
+[repository](https://github.com/kuv2707/repress-rs)
 
 ## How to run
 
-By executing the main file, the server will start, and the engine
-will be ready to play chess. Chess calculations can be performed
-using either the custom chess engine or the Stockfish engine.
-Needless to say, the Stockfish engine is much more powerful and
-capable than the custom engine.
+-   Running `cargo run` will start the server on `localhost:4000`.
+-   If using the stockfish engine, make sure the stockfish binary is
+    present in the root directory. The repository includes Stockfish
+    15.1 executables for Windows and Linux. For other versions:
+    -   Download the Stockfish binary from the
+        [Stockfish website](https://stockfishchess.org/download/).
+    -   Rename the binary to `stockfish` and place it in the root
+        directory of the project.
 
 ## Tech stack
 
