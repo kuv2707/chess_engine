@@ -1,11 +1,11 @@
 use std::env;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 
 pub struct StockfishAdapter {
     process: Child,
-    stdin: Option<ChildStdin>,
-    stdout: Option<ChildStdout>,
+    stdin: ChildStdin,
+    stdout: ChildStdout,
 }
 
 impl StockfishAdapter {
@@ -36,8 +36,8 @@ impl StockfishAdapter {
 
         StockfishAdapter {
             process: child,
-            stdin: Some(input),
-            stdout: Some(output),
+            stdin: input,
+            stdout: output,
         }
     }
     pub fn pid(&self) -> u32 {
@@ -47,10 +47,10 @@ impl StockfishAdapter {
         self.process.kill().expect("failed to kill process");
     }
     pub fn status(&mut self) -> bool {
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "isready").expect("failed to write to stdin");
         sin.flush().expect("failed to flush stdin");
-        let sout = self.stdout.as_mut().unwrap();
+        let sout = self.stdout.by_ref();
         let reader = BufReader::new(sout);
         for line in reader.lines() {
             match line {
@@ -65,18 +65,18 @@ impl StockfishAdapter {
         false
     }
     pub fn newgame(&mut self) {
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "ucinewgame").expect("failed to write to stdin");
         sin.flush().expect("failed to flush stdin");
     }
     pub fn set_level(&mut self, level: u32) {
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "setoption name Skill Level value {}", level)
             .expect("failed to write to stdin");
         sin.flush().expect("failed to flush stdin");
     }
     pub fn set_fen(&mut self, fen: &str) {
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "position fen {}", fen).expect("failed to write to stdin");
         sin.flush().expect("failed to flush stdin");
     }
@@ -84,13 +84,13 @@ impl StockfishAdapter {
         if depth == 0 {
             depth = 5; //default depth
         }
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "go depth {}", depth).expect("failed to write to stdin");
         sin.flush().expect("failed to flush stdin");
     }
     pub fn bestmove(&mut self) -> String {
         self.go(8);
-        let sout = self.stdout.as_mut().unwrap();
+        let sout = self.stdout.by_ref();
         let reader = BufReader::new(sout);
         let mut bestmove = String::new();
         for line in reader.lines() {
@@ -108,9 +108,9 @@ impl StockfishAdapter {
         bestmove
     }
     pub fn legal_moves(&mut self) -> Vec<String> {
-        let sout = self.stdout.as_mut().unwrap();
+        let sout = self.stdout.by_ref();
         let reader = BufReader::new(sout);
-        let sin = self.stdin.as_mut().unwrap();
+        let sin = self.stdin.by_ref();
         writeln!(sin, "go perft 1").expect("failed to write to stdin");
         sin.flush();
         let mut legal_moves = Vec::new();
