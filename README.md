@@ -48,11 +48,11 @@ appropriate data, as defined by the handlers. Checkout the
 -   Running `cargo run` will start the server on `localhost:4000`.
 -   If using the stockfish engine, make sure the stockfish binary is
     present in the root directory. The repository includes Stockfish
-    15.1 executables for Windows and Linux. For other versions:
-    -   Download the Stockfish binary from the
+    16.1 executables for Windows and Linux. For other options:
+    -   Download the binary from the
         [Stockfish website](https://stockfishchess.org/download/).
-    -   Rename the binary to `stockfish` and place it in the root
-        directory of the project.
+    -   Rename the binary to `windows` or `linux` as appropriate and
+        place it in the root directory of the project.
 
 ## Tech stack
 

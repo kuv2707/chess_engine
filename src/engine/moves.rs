@@ -7,8 +7,6 @@ use super::{
     Move,
 };
 
-//define macro to get nth bit as i8
-
 //raw move means those moves are not excluded which can lead to the same side getting a check
 
 macro_rules! nth_bit {

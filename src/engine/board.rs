@@ -224,7 +224,7 @@ impl Board {
         }
         score
     }
-    pub fn to_fen(&self)->String{
+    pub fn to_fen(&self) -> String {
         let mut fen = String::new();
         for rank in 0..8 {
             let mut empty_squares = 0;
