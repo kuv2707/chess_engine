@@ -40,7 +40,7 @@ impl StockfishAdapter {
             stdout: output,
         }
     }
-    pub fn pid(&self) -> u32 {
+    pub fn _pid(&self) -> u32 {
         self.process.id()
     }
     pub fn kill(&mut self) {
@@ -112,18 +112,18 @@ impl StockfishAdapter {
         let reader = BufReader::new(sout);
         let sin = self.stdin.by_ref();
         writeln!(sin, "go perft 1").expect("failed to write to stdin");
-        sin.flush();
+        let _ = sin.flush();
         let mut legal_moves = Vec::new();
         for line in reader.lines() {
             match line {
                 Ok(line) => {
-                    println!("{}", line);
+                    // println!("{}", line);
                     if line.len() == 0 {
                         break;
                     }
                     let colon_index = line.find(":");
                     if colon_index.is_none() {
-                        break;
+                        continue;
                     }
                     let moves = &line[0..colon_index.unwrap()];
                     legal_moves.push(moves.to_string());

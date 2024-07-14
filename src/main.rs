@@ -32,7 +32,8 @@ pub fn main() {
             }
             let fen = fen.unwrap();
             let mut stockfish = StockfishAdapter::new();
-            if (!stockfish.status()) {
+            stockfish.newgame();
+            if !stockfish.status() {
                 res.set_status(500)
                     .text("{\"error\": \"stockfish not running\"}".to_string());
                 res.end();
@@ -40,6 +41,13 @@ pub fn main() {
             }
             println!("fen: {}", fen);
             stockfish.set_fen(fen.as_str());
+            match body.get("level") {
+                Some(level) => match level.parse::<u32>() {
+                    Ok(level) => stockfish.set_level(level),
+                    Err(_) => {}
+                },
+                None => {}
+            }
             let op = body.get("operation");
             match op {
                 Some(op) => {
@@ -47,7 +55,7 @@ pub fn main() {
                         let bestmove = stockfish.bestmove();
                         res.set_status(200)
                             .text(format!("{{\"bestmove\": \"{}\"}}", bestmove));
-                    } else if (op.eq("legalmoves")) {
+                    } else if op.eq("legalmoves") {
                         let legal_moves = stockfish.legal_moves();
                         res.set_status(200).text(json_list(legal_moves));
                     } else {
