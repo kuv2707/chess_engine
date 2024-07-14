@@ -121,7 +121,8 @@ impl Board {
         self.set_piece(to, m.killed_piece);
         self.side_to_move = self.side_to_move.opponent_color();
     }
-    // this function checks whether the current side to move has any moves which coincide with the king of the color `col`
+    // this function checks whether the current side to move has
+    // any moves which coincide with the king of the color `col`
     pub fn has_check(&self, col: &PieceColor) -> bool {
         //board MUST have both kings
 
@@ -200,7 +201,8 @@ impl Board {
         //evaluation criteria:
         // location of pieces on board
         // danger to king
-        // danger to other pieces === potential to capture other pieces: but weightage given should be lesser than the weightage given to the piece itself
+        // danger to other pieces === potential to capture other pieces: but
+        // weightage given should be lesser than the weightage given to the piece itself
         let mut score = 0.0;
         let mut pos = 0;
         for piece in self.squares.iter() {
@@ -285,11 +287,6 @@ impl Board {
         for rank in 0..8 {
             board_string.push_str(&format!("{}| ", 8 - rank));
             for file in 0..8 {
-                // let piece = self.get_piece(rank * 8 + file);
-                // match piece {
-                //     Some(p) => board_string.push_str(&format!("{} ", p)),
-                //     None => board_string.push_str("  "),
-                // }
                 if positions.contains(&(rank * 8 + file)) {
                     board_string.push_str("* ");
                 } else {
@@ -329,7 +326,7 @@ impl fmt::Display for Board {
     }
 }
 
-//"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+// Sample FEN: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 pub fn create_board(fen: &str) -> Option<Board> {
     let mut board = Board {
         squares: [None; 64],
